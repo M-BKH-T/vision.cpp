@@ -14,9 +14,8 @@ jobs:
           submodules: 'recursive'
           fetch-depth: 0
 
-      - name: Force Init Submodules
+      - name: Force Update Submodules
         run: |
-          git submodule sync --recursive
           git submodule update --init --recursive --force
 
       - name: Setup Android NDK
@@ -37,8 +36,7 @@ jobs:
             -DCMAKE_TOOLCHAIN_FILE=$NDK_PATH/build/cmake/android.toolchain.cmake \
             -DANDROID_ABI=arm64-v8a \
             -DANDROID_PLATFORM=android-24 \
-            -DCMAKE_CXX_STANDARD=17 \
-            -DCMAKE_CXX_STANDARD_REQUIRED=ON \
+            -DVISP_FMT_LIB=ON \
             -DCMAKE_BUILD_TYPE=Release \
             -DBUILD_SHARED_LIBS=ON
           make -j$(nproc)
