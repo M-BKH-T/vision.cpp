@@ -11,8 +11,13 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
-          submodules: recursive
+          submodules: 'recursive'
           fetch-depth: 0
+
+      - name: Force Init Submodules
+        run: |
+          git submodule sync --recursive
+          git submodule update --init --recursive --force
 
       - name: Setup Android NDK
         uses: android-actions/setup-android@v3
@@ -23,22 +28,6 @@ jobs:
         run: |
           yes | sdkmanager "ndk;26.1.10909125"
 
-      - name: Build and Install fmt library for Android
-        run: |
-          NDK_PATH=$ANDROID_HOME/ndk/26.1.10909125
-          git clone --branch 10.2.1 https://github.com/fmtlib/fmt.git
-          cd fmt
-          mkdir build_android && cd build_android
-          cmake .. \
-            -DCMAKE_TOOLCHAIN_FILE=$NDK_PATH/build/cmake/android.toolchain.cmake \
-            -DANDROID_ABI=arm64-v8a \
-            -DANDROID_PLATFORM=android-24 \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DFMT_TEST=OFF \
-            -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/fmt_install
-          make -j$(nproc)
-          make install
-
       - name: Build vision.cpp with CMake
         run: |
           NDK_PATH=$ANDROID_HOME/ndk/26.1.10909125
@@ -48,9 +37,10 @@ jobs:
             -DCMAKE_TOOLCHAIN_FILE=$NDK_PATH/build/cmake/android.toolchain.cmake \
             -DANDROID_ABI=arm64-v8a \
             -DANDROID_PLATFORM=android-24 \
+            -DCMAKE_CXX_STANDARD=17 \
+            -DCMAKE_CXX_STANDARD_REQUIRED=ON \
             -DCMAKE_BUILD_TYPE=Release \
-            -DBUILD_SHARED_LIBS=ON \
-            -Dfmt_DIR=$GITHUB_WORKSPACE/fmt_install/lib/cmake/fmt
+            -DBUILD_SHARED_LIBS=ON
           make -j$(nproc)
 
       - name: Upload Binaries and Shared Libraries
