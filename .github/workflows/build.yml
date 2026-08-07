@@ -14,16 +14,21 @@ jobs:
           submodules: recursive
 
       - name: Setup Android NDK
-        uses: nvm-sh/setup-android-ndk@v1
+        uses: android-actions/setup-android@v3
         with:
-          ndk-version: r26b
+          cmdline-tools-version: 8512546
+
+      - name: Install NDK Package
+        run: |
+          yes | sdkmanager "ndk;26.1.10909125"
 
       - name: Build with CMake
         run: |
+          NDK_PATH=$ANDROID_HOME/ndk/26.1.10909125
           mkdir build_android
           cd build_android
           cmake .. \
-            -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK_LATEST_HOME/build/cmake/android.toolchain.cmake \
+            -DCMAKE_TOOLCHAIN_FILE=$NDK_PATH/build/cmake/android.toolchain.cmake \
             -DANDROID_ABI=arm64-v8a \
             -DANDROID_PLATFORM=android-24 \
             -DCMAKE_BUILD_TYPE=Release \
