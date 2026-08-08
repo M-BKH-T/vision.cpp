@@ -40,7 +40,8 @@ jobs:
             -DBUILD_SHARED_LIBS=ON \
             -DVISP_FMT_LIB=ON \
             -DVISP_CI=ON \
-            -DVISP_PACKAGE=ON
+            -DVISP_PACKAGE=ON \
+            -DVISP_TESTS=OFF
           make -j$(nproc)
 
       - name: Upload Android Shared Libraries
