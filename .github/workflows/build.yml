@@ -18,17 +18,22 @@ jobs:
         run: |
           git submodule update --init --recursive --force
 
-      - name: Setup Android NDK
-        uses: nszin/setup-android-ndk@v1
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
         with:
-          ndk-version: r26b
+          cmdline-tools-version: 8512546
+
+      - name: Install NDK Package
+        run: |
+          yes | sdkmanager "ndk;26.1.10909125"
 
       - name: Build vision.cpp for Android ARM64
         run: |
+          NDK_PATH=$ANDROID_HOME/ndk/26.1.10909125
           mkdir build_android_arm64
           cd build_android_arm64
           cmake .. \
-            -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK_HOME/build/cmake/android.toolchain.cmake \
+            -DCMAKE_TOOLCHAIN_FILE=$NDK_PATH/build/cmake/android.toolchain.cmake \
             -DANDROID_ABI=arm64-v8a \
             -DANDROID_PLATFORM=android-24 \
             -DCMAKE_BUILD_TYPE=Release \
