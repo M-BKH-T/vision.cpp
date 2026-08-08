@@ -5,7 +5,7 @@ on:
 
 jobs:
   build-linux:
-    runs-on: ubuntu-22.04 
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout Repository
@@ -23,9 +23,11 @@ jobs:
           mkdir build_linux
           cd build_linux
           cmake .. \
-            -DVISP_FMT_LIB=ON \
             -DCMAKE_BUILD_TYPE=Release \
-            -DBUILD_SHARED_LIBS=ON
+            -DBUILD_SHARED_LIBS=ON \
+            -DVISP_FMT_LIB=ON \
+            -DVISP_CI=ON \
+            -DVISP_PACKAGE=ON
           make -j$(nproc)
 
       - name: Upload Binaries and Shared Libraries
@@ -33,5 +35,6 @@ jobs:
         with:
           name: vision-cpp-linux-x86_64
           path: |
-            build_linux/**/*.so
-            build_linux/**/vision-cli
+            build_linux/bin/vision-cli
+            build_linux/lib/*.so*
+            build_linux/**/*.so*
